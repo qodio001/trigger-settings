@@ -1,18 +1,25 @@
 on:
-  repository_dispatch:
-    types: [deploy]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "実行環境を選択してください"
+        required: true
+        default: "development"
+        type: choice
+        options:
+          - development
+          - staging
+          - production
+      version:
+        description: "デプロイするバージョンを入力してください"
+        required: true
+        type: string
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Check event data
-        run: |
-          echo "受信したイベントタイプ: ${{ github.event.action }}"
-          echo "環境: ${{ github.event.client_payload.environment }}"
-          echo "バージョン: ${{ github.event.client_payload.version }}"
-
       - name: Deploy application
-        if: github.event.client_payload.environment == 'production'
         run: |
-          echo "本番環境にデプロイを実行します"
+          echo "選択された環境: ${{ github.event.inputs.environment }}"
+          echo "指定されたバージョン: ${{ github.event.inputs.version }}"
